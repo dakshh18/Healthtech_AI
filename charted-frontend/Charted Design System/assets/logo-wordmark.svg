@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="32" viewBox="0 0 168 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="var(--primary, #0E7C8A)"></rect>
+  <path d="M6 18.5h3.4l2-5.2 2.6 8.2 2-4.2 1.4 2.2H21" stroke="var(--primary-fg, #fff)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  <path d="m20.4 17.6 2.2 2.4 4-5" stroke="var(--primary-fg, #fff)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  <text x="44" y="22" font-family="&#39;IBM Plex Sans&#39;, system-ui, sans-serif" font-size="20" font-weight="600" letter-spacing="-0.01em" fill="var(--fg1, #16242C)">Charted</text>
+</svg>
