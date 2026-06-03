@@ -1,0 +1,180 @@
+/* ==========================================================================
+   Charted — Component styles
+   Depends on colors_and_type.css (tokens). Flat, hairline, calm.
+   ========================================================================== */
+
+/* ---- Buttons ------------------------------------------------------------- */
+.btn {
+  --_bg: var(--surface);
+  --_fg: var(--fg1);
+  --_bd: var(--border-strong);
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 0 var(--space-4); height: 38px;
+  font: var(--weight-medium) var(--text-body)/1 var(--font-sans);
+  color: var(--_fg); background: var(--_bg);
+  border: var(--hairline) solid var(--_bd);
+  border-radius: var(--radius-md);
+  cursor: pointer; white-space: nowrap;
+  transition: background-color .14s ease, border-color .14s ease, opacity .14s ease;
+  user-select: none;
+}
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn:hover { background: var(--surface-2); }
+.btn:active { background: var(--surface-3); }
+.btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.btn-primary {
+  --_bg: var(--primary); --_fg: var(--primary-fg); --_bd: var(--primary);
+}
+.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-active); border-color: var(--primary-active); }
+
+.btn-ghost { --_bg: transparent; --_bd: transparent; --_fg: var(--fg2); }
+.btn-ghost:hover { background: var(--surface-2); }
+
+.btn-sm { height: 30px; padding: 0 var(--space-3); font-size: var(--text-small); }
+.btn-sm svg { width: 15px; height: 15px; }
+
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: .5; cursor: not-allowed; pointer-events: none;
+}
+
+/* ---- Status badges (pill) ------------------------------------------------ */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px 3px 8px;
+  font: var(--weight-medium) var(--text-small)/1.3 var(--font-sans);
+  border-radius: var(--radius-pill);
+  border: var(--hairline) solid transparent;
+}
+.badge::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor; flex: none;
+}
+.badge-draft    { color: var(--amber); background: var(--amber-subtle); border-color: var(--amber-border); }
+.badge-approved { color: var(--green); background: var(--green-subtle); border-color: var(--green-border); }
+.badge-neutral  { color: var(--fg2);  background: var(--surface-2);     border-color: var(--border); }
+
+/* ---- Low-confidence pill (no dot, small caps-free) ----------------------- */
+.pill-warn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 9px;
+  font: var(--weight-medium) var(--text-small)/1.3 var(--font-sans);
+  color: var(--warn); background: var(--warn-subtle);
+  border: var(--hairline) solid var(--warn-border);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.pill-warn svg { width: 13px; height: 13px; }
+
+/* ---- Cards / panels ------------------------------------------------------ */
+.card {
+  background: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.card-hover { transition: border-color .14s ease, background-color .14s ease; cursor: pointer; }
+.card-hover:hover { border-color: var(--border-strong); background: var(--surface-2); }
+
+/* ---- SOAP letter tag (small square) -------------------------------------- */
+.soap-tag {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; flex: none;
+  font: var(--weight-semibold) var(--text-body)/1 var(--font-mono);
+  color: var(--primary-fg); background: var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+/* ---- PHI mask tag -------------------------------------------------------- */
+.mask {
+  font: var(--weight-medium) var(--text-small)/1 var(--font-mono);
+  color: var(--mask-fg); background: var(--mask-bg);
+  border: var(--hairline) solid var(--mask-border);
+  border-radius: 4px; padding: 1px 6px; white-space: nowrap;
+}
+
+/* ---- Speaker label ------------------------------------------------------- */
+.speaker {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 22px; padding: 0 7px; flex: none;
+  font: var(--weight-semibold) var(--text-small)/1 var(--font-sans);
+  border-radius: var(--radius-sm);
+}
+.speaker-dr { color: var(--primary-subtle-fg); background: var(--primary-subtle); }
+.speaker-pt { color: var(--fg2); background: var(--surface-3); }
+
+/* ---- ICD-10 code chip ---------------------------------------------------- */
+.icd {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-md);
+}
+.icd-code {
+  font: var(--weight-semibold) var(--text-mono)/1 var(--font-mono);
+  color: var(--fg1); letter-spacing: .02em;
+}
+.icd-desc { font-size: var(--text-body); color: var(--fg2); }
+.icd-conf {
+  font: var(--weight-medium) var(--text-small)/1 var(--font-mono);
+  color: var(--fg3); margin-left: auto; white-space: nowrap;
+}
+
+/* ---- Icon button (accept / reject) --------------------------------------- */
+.iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex: none;
+  border-radius: var(--radius-sm); cursor: pointer;
+  border: var(--hairline) solid var(--border);
+  background: var(--surface); color: var(--fg2);
+  transition: background-color .14s, border-color .14s, color .14s;
+}
+.iconbtn svg { width: 16px; height: 16px; }
+.iconbtn:hover { background: var(--surface-2); }
+.iconbtn-accept:hover { color: var(--green); border-color: var(--green-border); background: var(--green-subtle); }
+.iconbtn-reject:hover { color: var(--danger); border-color: var(--danger-border); background: var(--danger-subtle); }
+.iconbtn.is-on-accept { color: var(--green); border-color: var(--green-border); background: var(--green-subtle); }
+.iconbtn.is-on-reject { color: var(--danger); border-color: var(--danger-border); background: var(--danger-subtle); }
+
+/* ---- Inputs / editable fields -------------------------------------------- */
+.input, .field {
+  width: 100%;
+  font: var(--weight-regular) var(--text-body)/var(--leading-normal) var(--font-sans);
+  color: var(--fg1); background: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.input::placeholder, .field::placeholder { color: var(--fg3); }
+.input:focus, .field:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-subtle); }
+
+/* Editable SOAP section body — looks like text, reveals affordance on hover */
+.editable {
+  border: var(--hairline) solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  margin: 0 calc(-1 * var(--space-3));
+  transition: background-color .14s, border-color .14s;
+  cursor: text;
+}
+.editable:hover { background: var(--surface-2); }
+.editable:focus { outline: none; background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-subtle); }
+
+/* ---- Diff marks ---------------------------------------------------------- */
+.diff-add { background: var(--diff-add-bg); color: var(--diff-add-fg); border-radius: 3px; padding: 0 3px; }
+.diff-del { background: var(--diff-del-bg); color: var(--diff-del-fg); border-radius: 3px; padding: 0 3px; text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* ---- Hairline divider ---------------------------------------------------- */
+.divider { height: var(--hairline); background: var(--border); border: 0; margin: 0; }
+
+/* ---- Version-history dot tag --------------------------------------------- */
+.vtag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 9px;
+  font: var(--weight-medium) var(--text-small)/1.3 var(--font-sans);
+  border-radius: var(--radius-pill);
+  border: var(--hairline) solid var(--border);
+}
+.vtag-ai      { color: var(--primary-subtle-fg); background: var(--primary-subtle); border-color: var(--primary-border); }
+.vtag-clin    { color: var(--fg2); background: var(--surface-2); }
