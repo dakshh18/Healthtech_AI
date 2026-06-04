@@ -1,0 +1,8 @@
+# Internal build guides, design prompts, and per-folder readmes.
+# The product is documented by the single root README.md.
+charted-backend.md
+charted-frontend.md
+charted-design-prompt.md
+charted-backend/README.md
+charted-frontend/README.md
+charted-frontend/Charted Design System/assets/SKILL.md
