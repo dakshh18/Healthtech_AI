@@ -1,0 +1,7 @@
+# Keep these OUT of the image (faster builds, smaller image, no secrets baked in).
+node_modules
+.env
+dist
+*.log
+.git
+src/eval/gold/*.mp3

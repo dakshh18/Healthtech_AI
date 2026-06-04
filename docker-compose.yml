@@ -1,0 +1,28 @@
+# Runs the whole backend stack (API + HTTPS proxy) with: docker compose up -d
+services:
+  # Your Node backend, built from the Dockerfile in ./charted-backend
+  backend:
+    build: ./charted-backend
+    restart: unless-stopped
+    env_file:
+      - ./charted-backend/.env   # OPENAI_API_KEY, DATABASE_URL, PORT, etc.
+    expose:
+      - "8080"                   # visible to other containers only, not the internet
+
+  # Caddy: terminates HTTPS and forwards to the backend container.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"                  # needed for the Let's Encrypt cert challenge
+      - "443:443"                # the public HTTPS traffic
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data         # persists the TLS certificates across restarts
+      - caddy_config:/config
+    depends_on:
+      - backend
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,5 @@
+charted-daksh.duckdns.org {
+	# "backend" is the docker-compose service name; Docker's internal DNS resolves
+	# it to the backend container. Caddy still does automatic HTTPS out front.
+	reverse_proxy backend:8080
+}
