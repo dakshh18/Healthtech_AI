@@ -1,9 +1,16 @@
 import { redact } from "./redact";
 import { structure } from "./structure";
 import { transcribe } from "./transcribe";
+import { extractDemographics, maskDemographics } from "./demographics";
+import { labelSpeakers, hasSpeakerLabels } from "./diarize";
 import { cached } from "../lib/cache";
 import { writeAudit } from "../lib/audit";
-import { saveTranscript, saveNoteVersion, setAudioSeconds } from "../db/queries";
+import {
+  saveTranscript,
+  saveNoteVersion,
+  setAudioSeconds,
+  setDemographics,
+} from "../db/queries";
 import type { SoapNote } from "../schema/soap";
 
 // Runs the transform pipeline for a transcript (text path): redact -> structure
@@ -13,7 +20,21 @@ export async function runPipeline(
   visitId: string,
   rawTranscript: string
 ): Promise<SoapNote> {
-  const redacted = redact(rawTranscript);
+  // Demographics are extracted from the raw transcript (no model), then masked
+  // out of what the structuring model will see.
+  const demographics = extractDemographics(rawTranscript);
+  await setDemographics(visitId, demographics);
+
+  let redacted = maskDemographics(redact(rawTranscript), demographics);
+  // Add speaker labels for display when the transcript doesn't already have them
+  // (e.g. Whisper output). Best-effort: fall back to the unlabeled text on error.
+  if (!hasSpeakerLabels(redacted)) {
+    try {
+      redacted = await labelSpeakers(redacted);
+    } catch {
+      // keep the unlabeled redacted text
+    }
+  }
   await saveTranscript(visitId, rawTranscript, redacted);
 
   const soap = await cached(redacted, () => structure(redacted));

@@ -1,9 +1,11 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import { MulterError } from "multer";
+import { cors } from "./lib/cors";
 import { healthRouter } from "./routes/health";
 import { visitsRouter } from "./routes/visits";
 
 export const app = express();
+app.use(cors);
 app.use(express.json({ limit: "1mb" }));
 
 app.use("/api/health", healthRouter);

@@ -8,6 +8,10 @@ create table if not exists visits (
   created_at    timestamptz not null default now()
 );
 
+-- Deterministically extracted patient demographics (synthetic data only).
+-- Stored separately from the de-identified note pipeline.
+alter table visits add column if not exists demographics jsonb;
+
 create table if not exists transcripts (
   id            uuid primary key default gen_random_uuid(),
   visit_id      uuid not null references visits(id) on delete cascade,
