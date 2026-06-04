@@ -1,0 +1,25 @@
+{
+  "id": "seasonal-allergic-rhinitis-06",
+  "complaint": "seasonal allergic rhinitis",
+  "transcript": "Front desk: Confirming your details — phone 415-555-1005, email patient5@example.com, date of birth 06/15/1985, SSN 123-45-1005, MRN: SYN1005.\nDoctor: Good morning! What brings you in today?\nPatient: Good morning, Doctor. I've been having a lot of sneezing and a runny nose lately, especially with the changing seasons. \nDoctor: I'm sorry to hear that. It sounds like you might be dealing with seasonal allergic rhinitis. Have you noticed any other symptoms?\nPatient: Yeah, I've also had itchy eyes and a bit of a sore throat. \nDoctor: I see. Let me check your vitals. Your blood pressure is 120 over 80, heart rate is 72 beats per minute, and your temperature is 98.6 degrees. Everything looks normal. Are you currently taking any medications for these symptoms?\nPatient: I've been using some over-the-counter antihistamines, like loratadine, but it hasn't been very effective this season.\nDoctor: That’s common. Would you be open to trying a prescription nasal spray, like fluticasone? It can help reduce inflammation in your nasal passages.\nPatient: Sure, that sounds good.\nDoctor: Also, do you have any allergies to medications?\nPatient: I'm allergic to penicillin, but nothing else.\nDoctor: Thank you for letting me know. So, just to summarize, we’ll add fluticasone for your seasonal allergic rhinitis, and you can keep using loratadine if you feel it helps at all. \nPatient: That sounds good to me. \nDoctor: Great! I’ll send that prescription to your pharmacy. If your symptoms don’t improve in a couple of weeks, come back and we can discuss other options. \nPatient: Thank you, Doctor!",
+  "plantedPhi": [
+    "415-555-1005",
+    "patient5@example.com",
+    "06/15/1985",
+    "123-45-1005",
+    "MRN: SYN1005"
+  ],
+  "expected": {
+    "chiefComplaint": "seasonal allergic rhinitis",
+    "medications": [
+      "loratadine",
+      "fluticasone"
+    ],
+    "allergies": [
+      "penicillin"
+    ],
+    "icdCodes": [
+      "J30.9"
+    ]
+  }
+}

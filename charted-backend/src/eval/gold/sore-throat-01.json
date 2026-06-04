@@ -1,0 +1,24 @@
+{
+  "id": "sore-throat-01",
+  "complaint": "sore throat",
+  "transcript": "Front desk: Confirming your details — phone 415-555-1000, email patient0@example.com, date of birth 01/15/1980, SSN 123-45-1000, MRN: SYN1000.\nDoctor: Good morning! What brings you in today?\n\nPatient: Hi, I’ve been having a really sore throat for the past few days.\n\nDoctor: I see. How would you describe the pain? Is it constant or does it come and go?\n\nPatient: It’s pretty constant, and it hurts more when I swallow.\n\nDoctor: I understand. Have you noticed any other symptoms, like a fever, cough, or runny nose?\n\nPatient: I had a slight fever yesterday, around 101 degrees, but it seems to be gone now. No cough or runny nose.\n\nDoctor: Got it. Let me take a look at your vitals. Your temperature is currently 98.6 degrees, blood pressure is 120 over 80, heart rate is 78 beats per minute, and your oxygen saturation is 98%.\n\nPatient: Okay.\n\nDoctor: Are you currently taking any medications?\n\nPatient: Just some over-the-counter ibuprofen for the pain.\n\nDoctor: That’s a good choice. Any allergies to medications I should know about?\n\nPatient: I’m allergic to penicillin.\n\nDoctor: Thanks for letting me know. I’ll avoid prescribing that. I’d like to do a quick throat exam to check for any signs of infection. \n\nPatient: Sure, go ahead.\n\nDoctor: (After the exam) It looks like you might have viral pharyngitis. I recommend continuing with ibuprofen for pain relief. You can also try warm salt water gargles.\n\nPatient: Sounds good. How long should I expect this to last?\n\nDoctor: It usually lasts about a week. If you don’t start feeling better or if your symptoms worsen, please come back. \n\nPatient: Will do. Thank you!",
+  "plantedPhi": [
+    "415-555-1000",
+    "patient0@example.com",
+    "01/15/1980",
+    "123-45-1000",
+    "MRN: SYN1000"
+  ],
+  "expected": {
+    "chiefComplaint": "sore throat",
+    "medications": [
+      "ibuprofen"
+    ],
+    "allergies": [
+      "penicillin"
+    ],
+    "icdCodes": [
+      "J02.9"
+    ]
+  }
+}

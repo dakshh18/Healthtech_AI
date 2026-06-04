@@ -1,8 +1,9 @@
 import { redact } from "./redact";
 import { structure } from "./structure";
+import { transcribe } from "./transcribe";
 import { cached } from "../lib/cache";
 import { writeAudit } from "../lib/audit";
-import { saveTranscript, saveNoteVersion } from "../db/queries";
+import { saveTranscript, saveNoteVersion, setAudioSeconds } from "../db/queries";
 import type { SoapNote } from "../schema/soap";
 
 // Runs the transform pipeline for a transcript (text path): redact -> structure
@@ -20,4 +21,20 @@ export async function runPipeline(
   await writeAudit(visitId, "structured", "system", { flags: soap.flags.length });
 
   return soap;
+}
+
+// Audio path: transcribe with Whisper, then feed the same pipeline. Synchronous
+// for v1 — we await the whole thing and return the note.
+export async function runPipelineFromAudio(
+  visitId: string,
+  buffer: Buffer,
+  filename: string
+): Promise<SoapNote> {
+  const { text, durationSeconds } = await transcribe(buffer, filename);
+  await writeAudit(visitId, "transcribed", "system", { durationSeconds });
+  if (durationSeconds != null) {
+    await setAudioSeconds(visitId, Math.round(durationSeconds));
+  }
+
+  return runPipeline(visitId, text);
 }

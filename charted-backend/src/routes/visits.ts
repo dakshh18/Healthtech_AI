@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { runPipeline } from "../pipeline/run";
+import multer from "multer";
+import { runPipeline, runPipelineFromAudio } from "../pipeline/run";
 import { SoapNote } from "../schema/soap";
 import { writeAudit } from "../lib/audit";
 import { rateLimit } from "../lib/rateLimit";
@@ -21,22 +22,37 @@ export const visitsRouter = Router();
 // Generous cap; protects the write routes without getting in the way of demos.
 const writeLimit = rateLimit(30, 60_000);
 
+// Whisper accepts files up to 25MB; memory storage since we never persist audio.
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+});
+
 function newPatientRef(): string {
   return `SYN-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
-// POST /api/visits — v1 path: JSON { transcript, patientRef? } -> run pipeline.
-// Audio upload is added in a later phase.
-visitsRouter.post("/", writeLimit, async (req, res, next) => {
+// POST /api/visits — accepts either a multipart `audio` file (-> Whisper) or
+// JSON { transcript }. Either way it runs the same pipeline synchronously.
+visitsRouter.post("/", writeLimit, upload.single("audio"), async (req, res, next) => {
   try {
-    const { transcript, patientRef } = req.body ?? {};
-    if (typeof transcript !== "string" || transcript.trim().length === 0) {
-      return res.status(400).json({ error: "transcript is required" });
+    const patientRef =
+      typeof req.body?.patientRef === "string" ? req.body.patientRef : newPatientRef();
+
+    if (req.file) {
+      const visit = await createVisit(patientRef);
+      const soap = await runPipelineFromAudio(visit.id, req.file.buffer, req.file.originalname);
+      const updated = (await getVisit(visit.id)) ?? visit;
+      return res.status(201).json({ visit: updated, note: soap });
     }
 
-    const visit = await createVisit(patientRef ?? newPatientRef());
-    const soap = await runPipeline(visit.id, transcript);
+    const transcript = req.body?.transcript;
+    if (typeof transcript !== "string" || transcript.trim().length === 0) {
+      return res.status(400).json({ error: "provide an audio file or a transcript" });
+    }
 
+    const visit = await createVisit(patientRef);
+    const soap = await runPipeline(visit.id, transcript);
     res.status(201).json({ visit, note: soap });
   } catch (err) {
     next(err);

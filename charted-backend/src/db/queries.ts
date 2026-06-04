@@ -39,6 +39,16 @@ export async function createVisit(
   return rows[0];
 }
 
+export async function setAudioSeconds(
+  visitId: string,
+  seconds: number
+): Promise<void> {
+  await pool.query(`update visits set audio_seconds = $2 where id = $1`, [
+    visitId,
+    seconds,
+  ]);
+}
+
 export async function saveTranscript(
   visitId: string,
   rawText: string,
