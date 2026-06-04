@@ -2,6 +2,8 @@
 [build]
   base = "charted-frontend"
   command = "npm run build"
+  # Publish must differ from base; the Next.js plugin reads the build output here.
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
