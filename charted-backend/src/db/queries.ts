@@ -1,11 +1,13 @@
 import { pool } from "./pool";
 import type { SoapNote } from "../schema/soap";
+import type { Demographics } from "../pipeline/demographics";
 
 export type VisitRow = {
   id: string;
   patient_ref: string;
   status: string;
   audio_seconds: number | null;
+  demographics: Demographics | null;
   created_at: string;
 };
 
@@ -49,6 +51,16 @@ export async function setAudioSeconds(
   ]);
 }
 
+export async function setDemographics(
+  visitId: string,
+  demographics: Demographics
+): Promise<void> {
+  await pool.query(`update visits set demographics = $2 where id = $1`, [
+    visitId,
+    JSON.stringify(demographics),
+  ]);
+}
+
 export async function saveTranscript(
   visitId: string,
   rawText: string,
@@ -85,7 +97,7 @@ export async function getVisit(visitId: string): Promise<VisitRow | null> {
 
 export async function listVisits(): Promise<VisitRow[]> {
   const { rows } = await pool.query<VisitRow>(
-    `select id, patient_ref, status, audio_seconds, created_at
+    `select id, patient_ref, status, audio_seconds, demographics, created_at
      from visits order by created_at desc`
   );
   return rows;
