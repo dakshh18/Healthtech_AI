@@ -8,6 +8,8 @@
     "start": "tsx src/server.ts",
     "build": "tsc",
     "db:init": "tsx src/db/init.ts",
+    "synth": "tsx src/eval/synth.ts",
+    "eval": "tsx src/eval/run-eval.ts",
     "test": "vitest run"
   },
   "dependencies": {

@@ -1,0 +1,25 @@
+{
+  "id": "lower-back-pain-02",
+  "complaint": "lower back pain",
+  "transcript": "Front desk: Confirming your details — phone 415-555-1001, email patient1@example.com, date of birth 02/15/1981, SSN 123-45-1001, MRN: SYN1001.\nDoctor: Good morning! What brings you in today?\nPatient: Hi, doctor. I've been having some lower back pain for the past week.\nDoctor: I'm sorry to hear that. On a scale of one to ten, how would you rate your pain?\nPatient: It's about a six right now, but it can get worse when I move a lot.\nDoctor: I see. Have you experienced any numbness or tingling in your legs?\nPatient: No, nothing like that. Just the pain.\nDoctor: Alright. Have you taken any medications for the pain?\nPatient: I took some ibuprofen, but it only helped a little.\nDoctor: How much ibuprofen did you take?\nPatient: I took 400 milligrams twice a day for a few days.\nDoctor: That’s fine, but just be cautious with long-term use. Are you currently taking any other medications?\nPatient: No, just the ibuprofen. I don’t have any other prescriptions.\nDoctor: Do you have any allergies to medications?\nPatient: Yes, I'm allergic to penicillin. I get hives when I take it.\nDoctor: Thanks for letting me know. Have you had any recent injuries or changes in activity that might have caused the pain?\nPatient: I did help a friend move last weekend, and I think I might have overdone it.\nDoctor: That could definitely be a factor. Let's do a physical exam to check your back. I’ll also recommend some stretches and possibly a muscle relaxant if needed. How does that sound?\nPatient: That sounds good. I just want to feel better.\nDoctor: I’ll write you a prescription for cyclobenzaprine if needed, and we’ll schedule a follow-up in a week. \nPatient: Thank you, doctor!",
+  "plantedPhi": [
+    "415-555-1001",
+    "patient1@example.com",
+    "02/15/1981",
+    "123-45-1001",
+    "MRN: SYN1001"
+  ],
+  "expected": {
+    "chiefComplaint": "lower back pain",
+    "medications": [
+      "ibuprofen",
+      "cyclobenzaprine"
+    ],
+    "allergies": [
+      "penicillin"
+    ],
+    "icdCodes": [
+      "M54.5"
+    ]
+  }
+}

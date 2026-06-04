@@ -1,0 +1,22 @@
+{
+  "id": "ankle-sprain-05",
+  "complaint": "ankle sprain",
+  "transcript": "Front desk: Confirming your details — phone 415-555-1004, email patient4@example.com, date of birth 05/15/1984, SSN 123-45-1004, MRN: SYN1004.\nDoctor: Good morning! What brings you in today?\nPatient: Hi, I think I sprained my ankle.\nDoctor: I see. Can you tell me how it happened?\nPatient: I was playing basketball last night and landed awkwardly on it.\nDoctor: Got it. On a scale from 1 to 10, how would you rate your pain?\nPatient: It's about a 7 right now.\nDoctor: Alright. Let's take a look. I’ll check your vitals first. Blood pressure is 120 over 80, heart rate is 72, and temperature is 98.6 degrees Fahrenheit. \nPatient: Okay.\nDoctor: Now, can you move your ankle at all?\nPatient: Not really, it hurts too much.\nDoctor: I can see some swelling. Have you taken anything for the pain?\nPatient: I took some ibuprofen earlier.\nDoctor: How much did you take?\nPatient: I took 400 milligrams.\nDoctor: Good choice. Do you have any allergies to medications?\nPatient: No, I don’t have any allergies.\nDoctor: Perfect. Based on what you’ve described, it sounds like a moderate sprain. I recommend rest, ice, compression, and elevation. You can continue taking ibuprofen for the pain. I will also give you a brace to support your ankle. \nPatient: Sounds good. How long will it take to heal?\nDoctor: Usually, it takes about 2 to 6 weeks, depending on the severity of the sprain. We’ll schedule a follow-up in a week to check on your progress.\nPatient: Thank you, Doctor!",
+  "plantedPhi": [
+    "415-555-1004",
+    "patient4@example.com",
+    "05/15/1984",
+    "123-45-1004",
+    "MRN: SYN1004"
+  ],
+  "expected": {
+    "chiefComplaint": "ankle sprain",
+    "medications": [
+      "ibuprofen"
+    ],
+    "allergies": [],
+    "icdCodes": [
+      "S93.401A"
+    ]
+  }
+}

@@ -84,6 +84,15 @@ describe.skipIf(!hasEnv)("visit approval workflow", () => {
     expect(res.status).toBe(409);
   });
 
+  it("rejects a create with neither audio nor transcript", async () => {
+    const res = await fetch(`${base}/api/visits`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    expect(res.status).toBe(400);
+  });
+
   it("records the full version history and audit trail", async () => {
     const res = (await (await fetch(`${base}/api/visits/${visitId}/versions`)).json()) as any;
     expect(res.versions.map((v: { version: number }) => v.version)).toEqual([1, 2]);
