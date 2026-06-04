@@ -1,0 +1,12 @@
+# Netlify config for the Charted frontend (monorepo: app lives in charted-frontend/)
+[build]
+  base = "charted-frontend"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Public API base — points the frontend at the EC2 backend (HTTPS via Caddy).
+  NEXT_PUBLIC_API_URL = "https://charted-daksh.duckdns.org"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
