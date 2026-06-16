@@ -1,4 +1,7 @@
-import { FileText, ShieldCheck } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { FileText, ShieldCheck, Copy, Check } from "lucide-react";
 import { parseTranscript, splitMasks, type Speaker } from "@/lib/transcript";
 
 function SpeakerChip({ speaker }: { speaker: Speaker }) {
@@ -25,6 +28,18 @@ function MaskedText({ text }: { text: string }) {
 
 export function TranscriptPane({ text }: { text: string | null }) {
   const turns = text ? parseTranscript(text) : [];
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard unavailable (e.g. insecure context) — silently ignore
+    }
+  };
 
   return (
     <section className="card flex flex-col" style={{ maxHeight: "calc(100vh - 180px)" }}>
@@ -33,10 +48,21 @@ export function TranscriptPane({ text }: { text: string | null }) {
           <FileText size={17} className="text-fg2" />
           <h2 className="h3">Transcript</h2>
         </div>
-        <span className="badge badge-neutral" style={{ paddingLeft: 10 }}>
-          <ShieldCheck size={13} style={{ marginLeft: -2 }} />
-          PHI masked
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            className="iconbtn"
+            onClick={copy}
+            disabled={!text}
+            title="Copy transcript"
+            aria-label="Copy transcript"
+          >
+            {copied ? <Check size={15} style={{ color: "var(--green)" }} /> : <Copy size={15} />}
+          </button>
+          <span className="badge badge-neutral" style={{ paddingLeft: 10 }}>
+            <ShieldCheck size={13} style={{ marginLeft: -2 }} />
+            PHI masked
+          </span>
+        </div>
       </div>
       <hr className="divider" />
 
