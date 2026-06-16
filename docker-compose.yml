@@ -1,11 +1,13 @@
-# Runs the whole backend stack (API + HTTPS proxy) with: docker compose up -d
+# Runs the backend stack (API + HTTPS proxy) with: docker compose up -d --build
+# The database is a managed external Postgres (Neon) — configured via
+# DATABASE_URL in charted-backend/.env — so there's no db container here.
 services:
   # Your Node backend, built from the Dockerfile in ./charted-backend
   backend:
     build: ./charted-backend
     restart: unless-stopped
     env_file:
-      - ./charted-backend/.env   # OPENAI_API_KEY, DATABASE_URL, PORT, etc.
+      - ./charted-backend/.env   # OPENAI_API_KEY, DATABASE_URL, JWT_SECRET, etc.
     expose:
       - "8080"                   # visible to other containers only, not the internet
 
