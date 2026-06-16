@@ -7,8 +7,8 @@ const ORIGIN = process.env.FRONTEND_ORIGIN ?? "http://localhost:3000";
 export function cors(req: Request, res: Response, next: NextFunction) {
   res.header("Access-Control-Allow-Origin", ORIGIN);
   res.header("Vary", "Origin");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PATCH,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
