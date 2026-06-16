@@ -8,6 +8,8 @@ export type VisitRow = {
   status: string;
   audio_seconds: number | null;
   demographics: Demographics | null;
+  patient_id: string | null;
+  doctor_id: string | null;
   created_at: string;
 };
 
@@ -32,11 +34,16 @@ export type AuditRow = {
 
 export async function createVisit(
   patientRef: string,
-  audioSeconds: number | null = null
+  opts: {
+    audioSeconds?: number | null;
+    patientId?: string | null;
+    doctorId?: string | null;
+  } = {}
 ): Promise<VisitRow> {
   const { rows } = await pool.query<VisitRow>(
-    `insert into visits (patient_ref, audio_seconds) values ($1, $2) returning *`,
-    [patientRef, audioSeconds]
+    `insert into visits (patient_ref, audio_seconds, patient_id, doctor_id)
+     values ($1, $2, $3, $4) returning *`,
+    [patientRef, opts.audioSeconds ?? null, opts.patientId ?? null, opts.doctorId ?? null]
   );
   return rows[0];
 }
@@ -97,8 +104,40 @@ export async function getVisit(visitId: string): Promise<VisitRow | null> {
 
 export async function listVisits(): Promise<VisitRow[]> {
   const { rows } = await pool.query<VisitRow>(
-    `select id, patient_ref, status, audio_seconds, demographics, created_at
+    `select id, patient_ref, status, audio_seconds, demographics, patient_id, doctor_id, created_at
      from visits order by created_at desc`
+  );
+  return rows;
+}
+
+// A patient's visits, each with its latest note summary and the doctor's name.
+// Used to build the patient history chart (Phase 5).
+export type PatientVisitRow = {
+  id: string;
+  status: string;
+  created_at: string;
+  doctor_id: string | null;
+  doctor_name: string | null;
+  latest_soap: SoapNote | null;
+  latest_version: number | null;
+};
+
+export async function listVisitsForPatient(
+  patientId: string
+): Promise<PatientVisitRow[]> {
+  const { rows } = await pool.query<PatientVisitRow>(
+    `select v.id, v.status, v.created_at, v.doctor_id,
+            d.name as doctor_name,
+            nv.soap as latest_soap, nv.version_no as latest_version
+     from visits v
+     left join users d on d.id = v.doctor_id
+     left join lateral (
+       select soap, version_no from note_versions
+       where visit_id = v.id order by version_no desc limit 1
+     ) nv on true
+     where v.patient_id = $1
+     order by v.created_at desc`,
+    [patientId]
   );
   return rows;
 }
@@ -158,6 +197,15 @@ export async function listAudit(visitId: string): Promise<AuditRow[]> {
   const { rows } = await pool.query<AuditRow>(
     `select * from audit_log where visit_id = $1 order by created_at asc, id asc`,
     [visitId]
+  );
+  return rows;
+}
+
+// System-wide activity feed for the admin dashboard (Phase 6).
+export async function listRecentAudit(limit = 50): Promise<AuditRow[]> {
+  const { rows } = await pool.query<AuditRow>(
+    `select * from audit_log order by created_at desc, id desc limit $1`,
+    [limit]
   );
   return rows;
 }

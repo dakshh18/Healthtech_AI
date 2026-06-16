@@ -4,6 +4,8 @@ import { runPipeline, runPipelineFromAudio } from "../pipeline/run";
 import { SoapNote } from "../schema/soap";
 import { writeAudit } from "../lib/audit";
 import { rateLimit } from "../lib/rateLimit";
+import { requireAuth, requireRole } from "../lib/requireAuth";
+import { getUserById } from "../db/users";
 import {
   createVisit,
   getVisit,
@@ -19,8 +21,8 @@ import {
 
 export const visitsRouter = Router();
 
-// Generous cap; protects the write routes without getting in the way of demos.
 const writeLimit = rateLimit(30, 60_000);
+const clinician = requireRole("DOCTOR", "ADMIN");
 
 // Whisper accepts files up to 25MB; memory storage since we never persist audio.
 const upload = multer({
@@ -31,16 +33,23 @@ const upload = multer({
 function newPatientRef(): string {
   return `SYN-${Math.floor(1000 + Math.random() * 9000)}`;
 }
-
-// POST /api/visits — accepts either a multipart `audio` file (-> Whisper) or
-// JSON { transcript }. Either way it runs the same pipeline synchronously.
-visitsRouter.post("/", writeLimit, upload.single("audio"), async (req, res, next) => {
+visitsRouter.post("/", requireAuth, clinician, writeLimit, upload.single("audio"), async (req, res, next) => {
   try {
     const patientRef =
       typeof req.body?.patientRef === "string" ? req.body.patientRef : newPatientRef();
 
+    let patientId: string | null = null;
+    if (typeof req.body?.patientId === "string" && req.body.patientId.length > 0) {
+      const patient = await getUserById(req.body.patientId);
+      if (!patient || patient.role !== "PATIENT") {
+        return res.status(400).json({ error: "patientId must reference an existing PATIENT user" });
+      }
+      patientId = patient.id;
+    }
+    const doctorId = req.user!.role === "DOCTOR" ? req.user!.id : null;
+
     if (req.file) {
-      const visit = await createVisit(patientRef);
+      const visit = await createVisit(patientRef, { patientId, doctorId });
       const soap = await runPipelineFromAudio(visit.id, req.file.buffer, req.file.originalname);
       const updated = (await getVisit(visit.id)) ?? visit;
       return res.status(201).json({ visit: updated, note: soap });
@@ -51,7 +60,7 @@ visitsRouter.post("/", writeLimit, upload.single("audio"), async (req, res, next
       return res.status(400).json({ error: "provide an audio file or a transcript" });
     }
 
-    const visit = await createVisit(patientRef);
+    const visit = await createVisit(patientRef, { patientId, doctorId });
     const soap = await runPipeline(visit.id, transcript);
     res.status(201).json({ visit, note: soap });
   } catch (err) {
@@ -60,7 +69,7 @@ visitsRouter.post("/", writeLimit, upload.single("audio"), async (req, res, next
 });
 
 // GET /api/visits — list for the sidebar
-visitsRouter.get("/", async (_req, res, next) => {
+visitsRouter.get("/", requireAuth, async (_req, res, next) => {
   try {
     const visits = await listVisits();
     res.json({ visits });
@@ -70,7 +79,7 @@ visitsRouter.get("/", async (_req, res, next) => {
 });
 
 // GET /api/visits/:id — visit + redacted transcript + latest note version
-visitsRouter.get("/:id", async (req, res, next) => {
+visitsRouter.get("/:id", requireAuth, async (req, res, next) => {
   try {
     const visit = await getVisit(req.params.id);
     if (!visit) return res.status(404).json({ error: "visit not found" });
@@ -92,9 +101,7 @@ visitsRouter.get("/:id", async (req, res, next) => {
   }
 });
 
-// PATCH /api/visits/:id/note — clinician edits create a new version (source
-// "clinician"). This never finalizes; the visit stays a draft until approval.
-visitsRouter.patch("/:id/note", writeLimit, async (req, res, next) => {
+visitsRouter.patch("/:id/note", requireAuth, clinician, writeLimit, async (req, res, next) => {
   try {
     const visit = await getVisit(req.params.id);
     if (!visit) return res.status(404).json({ error: "visit not found" });
@@ -107,7 +114,7 @@ visitsRouter.patch("/:id/note", writeLimit, async (req, res, next) => {
       return res.status(400).json({ error: "invalid soap note", details: parsed.error.flatten() });
     }
 
-    const author = typeof req.body?.author === "string" ? req.body.author : "clinician";
+    const author = req.user!.name;
     const versionNo = await getNextVersionNo(visit.id);
     const version = await saveNoteVersion(visit.id, versionNo, parsed.data, "clinician", author);
     await writeAudit(visit.id, "edited", author, { versionNo });
@@ -121,7 +128,7 @@ visitsRouter.patch("/:id/note", writeLimit, async (req, res, next) => {
 });
 
 // POST /api/visits/:id/approve — the ONLY route that finalizes a visit.
-visitsRouter.post("/:id/approve", writeLimit, async (req, res, next) => {
+visitsRouter.post("/:id/approve", requireAuth, clinician, writeLimit, async (req, res, next) => {
   try {
     const visit = await getVisit(req.params.id);
     if (!visit) return res.status(404).json({ error: "visit not found" });
@@ -134,7 +141,7 @@ visitsRouter.post("/:id/approve", writeLimit, async (req, res, next) => {
       return res.status(400).json({ error: "no note version to approve" });
     }
 
-    const actor = typeof req.body?.actor === "string" ? req.body.actor : "clinician";
+    const actor = req.user!.name;
     const updated = await setVisitStatus(visit.id, "approved");
     await writeAudit(visit.id, "approved", actor, { approvedVersion: latest.version_no });
 
@@ -145,7 +152,7 @@ visitsRouter.post("/:id/approve", writeLimit, async (req, res, next) => {
 });
 
 // GET /api/visits/:id/versions — full version history + audit trail
-visitsRouter.get("/:id/versions", async (req, res, next) => {
+visitsRouter.get("/:id/versions", requireAuth, async (req, res, next) => {
   try {
     const visit = await getVisit(req.params.id);
     if (!visit) return res.status(404).json({ error: "visit not found" });
